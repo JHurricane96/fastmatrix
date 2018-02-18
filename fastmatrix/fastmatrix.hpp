@@ -3,25 +3,20 @@
 
 namespace fastmatrix {
 
-template <class E, typename T> class matrix_expression {
+template <class E, typename T> class expression {
 public:
+  E const &get_const_derived() const { return static_cast<E const &>(*this); }
+
   T operator()(std::size_t i, std::size_t j) const {
-    return static_cast<E const &>(*this)(i, j);
+    get_const_derived()(i, j);
   }
 
-  std::size_t num_rows() const {
-    return static_cast<E const &>(*this).num_rows();
-  }
+  std::size_t num_rows() const { get_const_derived().num_rows(); }
 
-  std::size_t num_cols() const {
-    return static_cast<E const &>(*this).num_cols();
-  }
-
-  operator E &() { return static_cast<E &>(*this); }
-  operator const E &() const { return static_cast<const E &>(*this); }
+  std::size_t num_cols() const { get_const_derived().num_cols(); }
 };
 
-template <typename T> class matrix : public matrix_expression<matrix<T>, T> {
+template <typename T> class matrix : public expression<matrix<T>, T> {
 private:
   std::vector<T> container;
   std::size_t n_rows;
@@ -35,7 +30,7 @@ public:
       : container(n_rows * n_cols, fill), n_rows(n_rows), n_cols(n_cols) {}
 
   template <typename E>
-  matrix(matrix_expression<E, T> const &other)
+  matrix(expression<E, T> const &other)
       : n_rows(other.num_rows()), n_cols(other.num_cols()),
         container(other.num_rows() * other.num_cols()) {
     for (std::size_t i = 0; i < n_rows; ++i) {
@@ -60,14 +55,15 @@ public:
 
 template <class E1, class E2, typename T, class Op>
 class matrix_binary_operation
-    : public matrix_expression<matrix_binary_operation<E1, E2, T, Op>, T> {
+    : public expression<matrix_binary_operation<E1, E2, T, Op>, T> {
 public:
   E1 const &expr1;
   E2 const &expr2;
 
 public:
-  matrix_binary_operation(E1 const &expr1, E2 const &expr2)
-      : expr1(expr1), expr2(expr2) {}
+  matrix_binary_operation(expression<E1, T> const &expr1,
+                          expression<E2, T> const &expr2)
+      : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()) {}
 
   T operator()(std::size_t i, std::size_t j) const {
     return Op::apply(expr1, expr2, i, j);
@@ -79,17 +75,15 @@ public:
 };
 
 template <class E1, class E2, typename T> struct matrix_add {
-  static T apply(matrix_expression<E1, T> const &expr1,
-                 matrix_expression<E2, T> const &expr2, std::size_t i,
-                 std::size_t j) {
+  static T apply(expression<E1, T> const &expr1, expression<E2, T> const &expr2,
+                 std::size_t i, std::size_t j) {
     return expr1(i, j) + expr2(i, j);
   }
 };
 
 template <class E1, class E2, typename T>
 matrix_binary_operation<E1, E2, T, matrix_add<E1, E2, T>>
-operator+(matrix_expression<E1, T> const &expr1,
-          matrix_expression<E2, T> const &expr2) {
+operator+(expression<E1, T> const &expr1, expression<E2, T> const &expr2) {
   assert(expr1.num_rows() == expr2.num_rows());
   assert(expr1.num_cols() == expr2.num_cols());
   return matrix_binary_operation<E1, E2, T, matrix_add<E1, E2, T>>(expr1,
@@ -97,9 +91,8 @@ operator+(matrix_expression<E1, T> const &expr1,
 }
 
 template <class E1, class E2, typename T> struct matrix_multiply {
-  static T apply(matrix_expression<E1, T> const &expr1,
-                 matrix_expression<E2, T> const &expr2, std::size_t i,
-                 std::size_t j) {
+  static T apply(expression<E1, T> const &expr1, expression<E2, T> const &expr2,
+                 std::size_t i, std::size_t j) {
     T ans = expr1(i, 0) * expr2(0, j);
     for (int k = 1; k < expr1.num_cols(); ++k) {
       ans = ans + expr1(i, k) * expr2(k, j);
@@ -110,8 +103,7 @@ template <class E1, class E2, typename T> struct matrix_multiply {
 
 template <class E1, class E2, typename T>
 matrix_binary_operation<E1, E2, T, matrix_multiply<E1, E2, T>>
-operator*(matrix_expression<E1, T> const &expr1,
-          matrix_expression<E2, T> const &expr2) {
+operator*(expression<E1, T> const &expr1, expression<E2, T> const &expr2) {
   assert(expr1.num_cols() == expr2.num_rows());
   return matrix_binary_operation<E1, E2, T, matrix_multiply<E1, E2, T>>(expr1,
                                                                         expr2);
