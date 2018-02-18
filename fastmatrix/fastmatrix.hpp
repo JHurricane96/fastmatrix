@@ -56,7 +56,7 @@ public:
 template <class E1, class E2, typename T, class Op>
 class matrix_binary_operation
     : public expression<matrix_binary_operation<E1, E2, T, Op>, T> {
-public:
+private:
   E1 const &expr1;
   E2 const &expr2;
 
