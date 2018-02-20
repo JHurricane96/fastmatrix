@@ -40,6 +40,17 @@ public:
     }
   }
 
+  template <typename E>
+  matrix& operator=(expression<E, T> const& other) {
+    assert(n_rows >= other.num_rows());
+    assert(n_cols >= other.num_cols());
+    for (std::size_t i = 0; i < other.num_rows(); ++i) {
+      for (std::size_t j = 0; j < other.num_cols(); ++j) {
+        container[i * n_rows + j] = other(i, j);
+      }
+    }
+  }
+
   T operator()(std::size_t i, std::size_t j) const {
     assert(i < n_rows && i >= 0);
     assert(j < n_cols && j >= 0);
