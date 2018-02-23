@@ -4,29 +4,40 @@
 
 namespace fastmatrix {
 
-template <typename T> struct eval_return_type {
+template <typename T>
+struct eval_return_type {
   using type = typename T::EvalReturnType;
 };
 
 template <typename T>
 using eval_return_type_t = typename eval_return_type<T>::type;
 
-template <typename T> struct element_type {
+template <typename T>
+struct element_type {
   using type = typename T::ElementType;
 };
 
-template <typename T> using element_type_t = typename element_type<T>::type;
+template <typename T>
+using element_type_t = typename element_type<T>::type;
 
-template <class E> class expression {
+template <class E>
+class expression {
 public:
-  E const &get_const_derived() const { return static_cast<E const &>(*this); }
+  E const &get_const_derived() const {
+    return static_cast<E const &>(*this);
+  }
 
-  std::size_t num_rows() const { return get_const_derived().num_rows(); }
+  std::size_t num_rows() const {
+    return get_const_derived().num_rows();
+  }
 
-  std::size_t num_cols() const { return get_const_derived().num_cols(); }
+  std::size_t num_cols() const {
+    return get_const_derived().num_cols();
+  }
 };
 
-template <typename T> class matrix : public expression<matrix<T>> {
+template <typename T>
+class matrix : public expression<matrix<T>> {
 private:
   std::vector<T> container;
   std::size_t n_rows;
@@ -38,17 +49,20 @@ public:
   typedef matrix<T> EvalReturnType;
   typedef T ElementType;
 
-  matrix() {}
+  matrix() {
+  }
 
   matrix(std::size_t n_rows, std::size_t n_cols)
-      : container(n_rows * n_cols), n_rows(n_rows), n_cols(n_cols) {}
+      : container(n_rows * n_cols), n_rows(n_rows), n_cols(n_cols) {
+  }
 
   matrix(std::size_t n_rows, std::size_t n_cols, T fill)
-      : container(n_rows * n_cols, fill), n_rows(n_rows), n_cols(n_cols) {}
+      : container(n_rows * n_cols, fill), n_rows(n_rows), n_cols(n_cols) {
+  }
 
   matrix(matrix<T> &&other)
-      : container(std::move(other.container)), n_rows(other.num_rows()),
-        n_cols(other.num_cols()) {}
+      : container(std::move(other.container)), n_rows(other.num_rows()), n_cols(other.num_cols()) {
+  }
 
   template <typename E>
   matrix(expression<E> const &other)
@@ -57,7 +71,8 @@ public:
     assign(other.get_const_derived());
   }
 
-  template <typename E> matrix &operator=(expression<E> const &other) {
+  template <typename E>
+  matrix &operator=(expression<E> const &other) {
     assert(n_rows >= other.num_rows());
     assert(n_cols >= other.num_cols());
     assign(other.get_const_derived());
@@ -79,19 +94,28 @@ public:
     return container[i * n_rows + j];
   }
 
-  std::vector<T> &get_container() { return container; }
+  std::vector<T> &get_container() {
+    return container;
+  }
 
-  std::size_t num_rows() const { return n_rows; }
+  std::size_t num_rows() const {
+    return n_rows;
+  }
 
-  std::size_t num_cols() const { return n_cols; }
+  std::size_t num_cols() const {
+    return n_cols;
+  }
 
-  const matrix<T> &eval() const { return *this; }
+  const matrix<T> &eval() const {
+    return *this;
+  }
 
   void set_elt(std::size_t i, std::size_t j, T value) {
     container[i * n_rows + j] = value;
   }
 
-  template <typename E> void assign(expression<E> const &expr) {
+  template <typename E>
+  void assign(expression<E> const &expr) {
     for (std::size_t i = 0; i < n_rows; ++i) {
       for (std::size_t j = 0; j < n_cols; ++j) {
         container[i * n_rows + j] = expr.get_const_derived()(i, j);
@@ -104,7 +128,8 @@ public:
 namespace std {
 using namespace fastmatrix;
 
-template <typename T1, typename T2> struct common_type<matrix<T1>, matrix<T2>> {
+template <typename T1, typename T2>
+struct common_type<matrix<T1>, matrix<T2>> {
   using type = matrix<std::common_type_t<T1, T2>>;
 };
 } // namespace std
@@ -112,21 +137,18 @@ template <typename T1, typename T2> struct common_type<matrix<T1>, matrix<T2>> {
 namespace fastmatrix {
 
 template <class E1, class E2, class Op>
-class cwise_matrix_binary_operation
-    : public expression<cwise_matrix_binary_operation<E1, E2, Op>> {
+class cwise_matrix_binary_operation : public expression<cwise_matrix_binary_operation<E1, E2, Op>> {
 private:
   E1 const &expr1;
   E2 const &expr2;
 
 public:
-  using EvalReturnType =
-      std::common_type_t<eval_return_type_t<E1>, eval_return_type_t<E2>>;
-  using ElementType =
-      std::common_type_t<element_type_t<E1>, element_type_t<E2>>;
+  using EvalReturnType = std::common_type_t<eval_return_type_t<E1>, eval_return_type_t<E2>>;
+  using ElementType = std::common_type_t<element_type_t<E1>, element_type_t<E2>>;
 
-  cwise_matrix_binary_operation(expression<E1> const &expr1,
-                                expression<E2> const &expr2)
-      : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()) {}
+  cwise_matrix_binary_operation(expression<E1> const &expr1, expression<E2> const &expr2)
+      : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()) {
+  }
 
   ElementType operator()(std::size_t i, std::size_t j) const {
     return Op::apply(expr1, expr2, i, j);
@@ -138,18 +160,20 @@ public:
     return temp;
   }
 
-  std::size_t num_rows() const { return expr1.num_rows(); }
+  std::size_t num_rows() const {
+    return expr1.num_rows();
+  }
 
-  std::size_t num_cols() const { return expr1.num_cols(); }
+  std::size_t num_cols() const {
+    return expr1.num_cols();
+  }
 };
 
 template <typename E1, typename E2>
 class matrix_product : public expression<matrix_product<E1, E2>> {
 public:
-  using EvalReturnType =
-      std::common_type_t<eval_return_type_t<E1>, eval_return_type_t<E2>>;
-  using ElementType =
-      std::common_type_t<element_type_t<E1>, element_type_t<E2>>;
+  using EvalReturnType = std::common_type_t<eval_return_type_t<E1>, eval_return_type_t<E2>>;
+  using ElementType = std::common_type_t<element_type_t<E1>, element_type_t<E2>>;
 
 private:
   E1 const &expr1;
@@ -162,14 +186,10 @@ public:
         temp(expr1.num_rows(), expr2.num_cols()) {
     for (std::size_t i = 0; i < num_rows(); ++i) {
       for (std::size_t j = 0; j < num_cols(); ++j) {
-        temp.set_elt(i, j,
-                     expr1.get_const_derived()(i, 0) *
-                         expr2.get_const_derived()(0, j));
+        temp.set_elt(i, j, expr1.get_const_derived()(i, 0) * expr2.get_const_derived()(0, j));
         for (std::size_t k = 1; k < expr1.num_cols(); ++k) {
-          temp.set_elt(i, j,
-                       expr1.get_const_derived()(i, k) *
-                               expr2.get_const_derived()(k, j) +
-                           temp(i, j));
+          temp.set_elt(
+              i, j, expr1.get_const_derived()(i, k) * expr2.get_const_derived()(k, j) + temp(i, j));
         }
       }
     }
@@ -179,33 +199,37 @@ public:
     return temp(i, j);
   }
 
-  EvalReturnType const &eval() const { return temp; }
+  EvalReturnType const &eval() const {
+    return temp;
+  }
 
-  std::size_t num_rows() const { return expr1.num_rows(); }
+  std::size_t num_rows() const {
+    return expr1.num_rows();
+  }
 
-  std::size_t num_cols() const { return expr2.num_cols(); }
+  std::size_t num_cols() const {
+    return expr2.num_cols();
+  }
 };
 
-template <class E1, class E2> struct matrix_add {
+template <class E1, class E2>
+struct matrix_add {
   static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
-  apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i,
-        std::size_t j) {
+  apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
     return expr1.get_const_derived()(i, j) + expr2.get_const_derived()(i, j);
   }
 };
 
 template <class E1, class E2>
-cwise_matrix_binary_operation<E1, E2, matrix_add<E1, E2>>
-operator+(expression<E1> const &expr1, expression<E2> const &expr2) {
+cwise_matrix_binary_operation<E1, E2, matrix_add<E1, E2>> operator+(expression<E1> const &expr1,
+                                                                    expression<E2> const &expr2) {
   assert(expr1.num_rows() == expr2.num_rows());
   assert(expr1.num_cols() == expr2.num_cols());
-  return cwise_matrix_binary_operation<E1, E2, matrix_add<E1, E2>>(expr1,
-                                                                   expr2);
+  return cwise_matrix_binary_operation<E1, E2, matrix_add<E1, E2>>(expr1, expr2);
 }
 
 template <class E1, class E2>
-matrix_product<E1, E2> operator*(expression<E1> const &expr1,
-                                 expression<E2> const &expr2) {
+matrix_product<E1, E2> operator*(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_cols() == expr2.num_rows());
   return matrix_product<E1, E2>(expr1, expr2);
 }
