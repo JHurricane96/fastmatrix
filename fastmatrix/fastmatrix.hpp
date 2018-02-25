@@ -258,7 +258,7 @@ public:
 };
 
 template <class E1, class E2>
-struct matrix_add {
+struct cwise_matrix_add {
   static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
     return expr1.get_const_derived()(i, j) + expr2.get_const_derived()(i, j);
@@ -266,7 +266,7 @@ struct matrix_add {
 };
 
 template <class E1, class E2>
-struct matrix_multiply {
+struct cwise_matrix_multiply {
   static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
     return expr1.get_const_derived()(i, j) * expr2.get_const_derived()(i, j);
@@ -274,18 +274,18 @@ struct matrix_multiply {
 };
 
 template <class E1, class E2>
-cwise_matrix_binary_operation<E1, E2, matrix_add<E1, E2>> operator+(expression<E1> const &expr1,
-                                                                    expression<E2> const &expr2) {
+cwise_matrix_binary_operation<E1, E2, cwise_matrix_add<E1, E2>>
+operator+(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_rows() == expr2.num_rows());
   assert(expr1.num_cols() == expr2.num_cols());
-  return cwise_matrix_binary_operation<E1, E2, matrix_add<E1, E2>>(expr1, expr2);
+  return cwise_matrix_binary_operation<E1, E2, cwise_matrix_add<E1, E2>>(expr1, expr2);
 }
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
-cwise_matrix_binary_operation<E, scalar_expression<T>, matrix_add<E, scalar_expression<T>>>
+cwise_matrix_binary_operation<E, scalar_expression<T>, cwise_matrix_add<E, scalar_expression<T>>>
 operator+(expression<E> const &expr, T const &scalar) {
   return cwise_matrix_binary_operation<E, scalar_expression<T>,
-                                       matrix_add<E, scalar_expression<T>>>(
+                                       cwise_matrix_add<E, scalar_expression<T>>>(
       expr, scalar_expression<T>(scalar));
 }
 
@@ -296,10 +296,11 @@ matrix_product<E1, E2> operator*(expression<E1> const &expr1, expression<E2> con
 }
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
-cwise_matrix_binary_operation<E, scalar_expression<T>, matrix_multiply<E, scalar_expression<T>>>
+cwise_matrix_binary_operation<E, scalar_expression<T>,
+                              cwise_matrix_multiply<E, scalar_expression<T>>>
 operator*(expression<E> const &expr, T const &scalar) {
   return cwise_matrix_binary_operation<E, scalar_expression<T>,
-                                       matrix_multiply<E, scalar_expression<T>>>(
+                                       cwise_matrix_multiply<E, scalar_expression<T>>>(
       expr, scalar_expression<T>(scalar));
 }
 } // namespace fastmatrix
