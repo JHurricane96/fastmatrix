@@ -52,10 +52,8 @@ private:
   std::size_t n_cols;
 
 public:
-  // using EvalReturnType = matrix<T>;
-  // using ElementType = T:
-  typedef matrix<T> EvalReturnType;
-  typedef T ElementType;
+  using EvalReturnType = matrix<T>;
+  using ElementType = T;
 
   matrix() {
   }
