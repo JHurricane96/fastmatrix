@@ -45,6 +45,35 @@ public:
 };
 
 template <typename T>
+class scalar_expression : public expression<scalar_expression<T>> {
+private:
+  T scalar;
+
+public:
+  using EvalReturnType = T;
+  using ElementType = T;
+
+  scalar_expression(T scalar) : scalar(scalar) {
+  }
+
+  T operator()(std::size_t, std::size_t) const {
+    return scalar;
+  }
+
+  T eval() const {
+    return scalar;
+  }
+
+  std::size_t num_rows() const {
+    return 0;
+  }
+
+  std::size_t num_cols() const {
+    return 0;
+  }
+};
+
+template <typename T>
 class matrix : public expression<matrix<T>> {
 private:
   std::vector<T> container;
@@ -128,6 +157,18 @@ public:
       }
     }
   }
+
+  template <typename E>
+  matrix<T> &operator+=(expression<E> const &expr);
+
+  template <typename E>
+  matrix<T> &operator*=(expression<E> const &expr);
+
+  template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
+  matrix<T> &operator+=(Scalar const &expr);
+
+  template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
+  matrix<T> &operator*=(Scalar const &expr);
 };
 } // namespace fastmatrix
 
@@ -146,35 +187,6 @@ struct common_type<matrix<T1>, T2> {
 } // namespace std
 
 namespace fastmatrix {
-
-template <typename T>
-class scalar_expression : public expression<scalar_expression<T>> {
-private:
-  T scalar;
-
-public:
-  using EvalReturnType = T;
-  using ElementType = T;
-
-  scalar_expression(T scalar) : scalar(scalar) {
-  }
-
-  T operator()(std::size_t, std::size_t) const {
-    return scalar;
-  }
-
-  T eval() const {
-    return scalar;
-  }
-
-  std::size_t num_rows() const {
-    return 0;
-  }
-
-  std::size_t num_cols() const {
-    return 0;
-  }
-};
 
 template <typename T>
 struct storage_type<scalar_expression<T>> {
@@ -302,5 +314,40 @@ operator*(expression<E> const &expr, T const &scalar) {
   return cwise_matrix_binary_operation<E, scalar_expression<T>,
                                        cwise_matrix_multiply<E, scalar_expression<T>>>(
       expr, scalar_expression<T>(scalar));
+}
+
+template <typename T>
+template <typename E>
+matrix<T> &matrix<T>::operator+=(expression<E> const &expr) {
+  assert(n_rows == expr.num_rows());
+  assert(n_cols == expr.num_cols());
+  assign(cwise_matrix_binary_operation<matrix<T>, E, cwise_matrix_add<matrix<T>, E>>(*this, expr));
+  return *this;
+}
+
+template <typename T>
+template <typename Scalar, typename>
+matrix<T> &matrix<T>::operator+=(Scalar const &scalar) {
+  assign(cwise_matrix_binary_operation<matrix<T>, scalar_expression<Scalar>,
+                                       cwise_matrix_add<matrix<T>, scalar_expression<Scalar>>>(
+      *this, scalar_expression(scalar)));
+  return *this;
+}
+
+template <typename T>
+template <typename E>
+matrix<T> &matrix<T>::operator*=(expression<E> const &expr) {
+  assert(n_rows == expr.num_cols());
+  assign(matrix_product(*this, expr));
+  return *this;
+}
+
+template <typename T>
+template <typename Scalar, typename>
+matrix<T> &matrix<T>::operator*=(Scalar const &scalar) {
+  assign(cwise_matrix_binary_operation<matrix<T>, scalar_expression<Scalar>,
+                                       cwise_matrix_multiply<matrix<T>, scalar_expression<Scalar>>>(
+      *this, scalar_expression(scalar)));
+  return *this;
 }
 } // namespace fastmatrix
