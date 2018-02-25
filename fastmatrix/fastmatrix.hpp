@@ -28,7 +28,7 @@ struct storage_type {
 template <typename T>
 using storage_type_t = typename storage_type<T>::type;
 
-template <class E>
+template <typename E>
 class expression {
 public:
   E const &get_const_derived() const {
@@ -193,7 +193,7 @@ struct storage_type<scalar_expression<T>> {
   using type = scalar_expression<T>;
 };
 
-template <class E1, class E2, class Op>
+template <typename E1, typename E2, typename Op>
 class cwise_matrix_binary_operation : public expression<cwise_matrix_binary_operation<E1, E2, Op>> {
 private:
   E1 const &expr1;
@@ -269,7 +269,7 @@ public:
   }
 };
 
-template <class E1, class E2>
+template <typename E1, typename E2>
 struct cwise_matrix_add {
   static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
@@ -277,7 +277,7 @@ struct cwise_matrix_add {
   }
 };
 
-template <class E1, class E2>
+template <typename E1, typename E2>
 struct cwise_matrix_multiply {
   static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
@@ -285,7 +285,7 @@ struct cwise_matrix_multiply {
   }
 };
 
-template <class E1, class E2>
+template <typename E1, typename E2>
 cwise_matrix_binary_operation<E1, E2, cwise_matrix_add<E1, E2>>
 operator+(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_rows() == expr2.num_rows());
@@ -301,7 +301,7 @@ operator+(expression<E> const &expr, T const &scalar) {
       expr, scalar_expression<T>(scalar));
 }
 
-template <class E1, class E2>
+template <typename E1, typename E2>
 matrix_product<E1, E2> operator*(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_cols() == expr2.num_rows());
   return matrix_product<E1, E2>(expr1, expr2);
