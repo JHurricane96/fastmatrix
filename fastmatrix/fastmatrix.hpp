@@ -102,8 +102,8 @@ public:
 
   template <typename E>
   matrix(expression<E> const &other)
-      : n_rows(other.num_rows()), n_cols(other.num_cols()),
-        container(other.num_rows() * other.num_cols()) {
+      : container(other.num_rows() * other.num_cols()), n_rows(other.num_rows()),
+        n_cols(other.num_cols()) {
     assign(other.get_const_derived());
   }
 
