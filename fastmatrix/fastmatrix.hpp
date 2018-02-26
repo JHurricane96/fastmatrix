@@ -126,7 +126,7 @@ public:
   T operator()(std::size_t i, std::size_t j) const {
     assert(i < n_rows && i >= 0);
     assert(j < n_cols && j >= 0);
-    return container[i * n_rows + j];
+    return container[i * n_cols + j];
   }
 
   std::vector<T> &get_container() {
@@ -146,14 +146,14 @@ public:
   }
 
   void set_elt(std::size_t i, std::size_t j, T value) {
-    container[i * n_rows + j] = value;
+    container[i * n_cols + j] = value;
   }
 
   template <typename E>
   void assign(expression<E> const &expr) {
     for (std::size_t i = 0; i < n_rows; ++i) {
       for (std::size_t j = 0; j < n_cols; ++j) {
-        container[i * n_rows + j] = expr.get_const_derived()(i, j);
+        container[i * n_cols + j] = expr.get_const_derived()(i, j);
       }
     }
   }
