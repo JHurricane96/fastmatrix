@@ -1,4 +1,5 @@
 #include <cassert>
+#include <ostream>
 #include <type_traits>
 #include <vector>
 
@@ -156,6 +157,16 @@ public:
         container[i * n_cols + j] = expr.get_const_derived()(i, j);
       }
     }
+  }
+
+  friend std::ostream &operator<<(std::ostream &ostream, const matrix<T> &mat) {
+    for (std::size_t i = 0; i < mat.n_rows; ++i) {
+      for (std::size_t j = 0; j < mat.n_cols; ++j) {
+        ostream << mat(i, j) << ", ";
+      }
+      ostream << "\n";
+    }
+    return ostream;
   }
 
   template <typename E>
