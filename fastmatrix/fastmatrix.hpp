@@ -54,8 +54,7 @@ public:
   using EvalReturnType = T;
   using ElementType = T;
 
-  scalar_expression(T scalar) : scalar(scalar) {
-  }
+  scalar_expression(T scalar) : scalar(scalar) {}
 
   T operator()(std::size_t, std::size_t) const {
     return scalar;
@@ -85,20 +84,16 @@ public:
   using EvalReturnType = matrix<T>;
   using ElementType = T;
 
-  matrix() {
-  }
+  matrix() {}
 
   matrix(std::size_t n_rows, std::size_t n_cols)
-      : container(n_rows * n_cols), n_rows(n_rows), n_cols(n_cols) {
-  }
+      : container(n_rows * n_cols), n_rows(n_rows), n_cols(n_cols) {}
 
   matrix(std::size_t n_rows, std::size_t n_cols, T fill)
-      : container(n_rows * n_cols, fill), n_rows(n_rows), n_cols(n_cols) {
-  }
+      : container(n_rows * n_cols, fill), n_rows(n_rows), n_cols(n_cols) {}
 
   matrix(matrix<T> &&other)
-      : container(std::move(other.container)), n_rows(other.num_rows()), n_cols(other.num_cols()) {
-  }
+      : container(std::move(other.container)), n_rows(other.num_rows()), n_cols(other.num_cols()) {}
 
   template <typename E>
   matrix(expression<E> const &other)
@@ -221,8 +216,7 @@ public:
   using ElementType = std::common_type_t<element_type_t<E1>, element_type_t<E2>>;
 
   cwise_matrix_binary_operation(expression<E1> const &expr1, expression<E2> const &expr2)
-      : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()) {
-  }
+      : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()) {}
 
   ElementType operator()(std::size_t i, std::size_t j) const {
     return Op::apply(expr1, expr2, i, j);
