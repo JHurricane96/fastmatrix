@@ -32,15 +32,15 @@ using storage_type_t = typename storage_type<T>::type;
 template <typename E>
 class expression {
 public:
-  E const &get_const_derived() const {
+  inline E const &get_const_derived() const {
     return static_cast<E const &>(*this);
   }
 
-  std::size_t num_rows() const {
+  inline std::size_t num_rows() const {
     return get_const_derived().num_rows();
   }
 
-  std::size_t num_cols() const {
+  inline std::size_t num_cols() const {
     return get_const_derived().num_cols();
   }
 };
@@ -54,21 +54,21 @@ public:
   using EvalReturnType = T;
   using ElementType = T;
 
-  scalar_expression(T scalar) : scalar(scalar) {}
+  inline scalar_expression(T scalar) : scalar(scalar) {}
 
-  T operator()(std::size_t, std::size_t) const {
+  inline T operator()(std::size_t, std::size_t) const {
     return scalar;
   }
 
-  T eval() const {
+  inline T eval() const {
     return scalar;
   }
 
-  std::size_t num_rows() const {
+  inline std::size_t num_rows() const {
     return 0;
   }
 
-  std::size_t num_cols() const {
+  inline std::size_t num_cols() const {
     return 0;
   }
 };
@@ -84,33 +84,33 @@ public:
   using EvalReturnType = matrix<T>;
   using ElementType = T;
 
-  matrix() {}
+  inline matrix() {}
 
-  matrix(std::size_t n_rows, std::size_t n_cols)
+  inline matrix(std::size_t n_rows, std::size_t n_cols)
       : container(n_rows * n_cols), n_rows(n_rows), n_cols(n_cols) {}
 
-  matrix(std::size_t n_rows, std::size_t n_cols, T fill)
+  inline matrix(std::size_t n_rows, std::size_t n_cols, T fill)
       : container(n_rows * n_cols, fill), n_rows(n_rows), n_cols(n_cols) {}
 
-  matrix(matrix<T> &&other)
+  inline matrix(matrix<T> &&other)
       : container(std::move(other.container)), n_rows(other.num_rows()), n_cols(other.num_cols()) {}
 
   template <typename E>
-  matrix(expression<E> const &other)
+  inline matrix(expression<E> const &other)
       : container(other.num_rows() * other.num_cols()), n_rows(other.num_rows()),
         n_cols(other.num_cols()) {
     assign(other.get_const_derived());
   }
 
   template <typename E>
-  matrix &operator=(expression<E> const &other) {
+  inline matrix &operator=(expression<E> const &other) {
     assert(n_rows >= other.num_rows());
     assert(n_cols >= other.num_cols());
     assign(other.get_const_derived());
     return *this;
   }
 
-  matrix &operator=(matrix<T> &&other) {
+  inline matrix &operator=(matrix<T> &&other) {
     if (this != &other) {
       container = std::move(other.container);
       n_rows = other.n_rows;
@@ -119,34 +119,34 @@ public:
     return *this;
   }
 
-  T operator()(std::size_t i, std::size_t j) const {
+  inline T operator()(std::size_t i, std::size_t j) const {
     assert(i < n_rows && i >= 0);
     assert(j < n_cols && j >= 0);
     return container[i * n_cols + j];
   }
 
-  std::vector<T> &get_container() {
+  inline std::vector<T> &get_container() {
     return container;
   }
 
-  std::size_t num_rows() const {
+  inline std::size_t num_rows() const {
     return n_rows;
   }
 
-  std::size_t num_cols() const {
+  inline std::size_t num_cols() const {
     return n_cols;
   }
 
-  const matrix<T> &eval() const {
+  inline const matrix<T> &eval() const {
     return *this;
   }
 
-  void set_elt(std::size_t i, std::size_t j, T value) {
+  inline void set_elt(std::size_t i, std::size_t j, T value) {
     container[i * n_cols + j] = value;
   }
 
   template <typename E>
-  void assign(expression<E> const &expr) {
+  inline void assign(expression<E> const &expr) {
     for (std::size_t i = 0; i < n_rows; ++i) {
       for (std::size_t j = 0; j < n_cols; ++j) {
         container[i * n_cols + j] = expr.get_const_derived()(i, j);
@@ -165,22 +165,22 @@ public:
   }
 
   template <typename E>
-  matrix<T> &operator+=(expression<E> const &expr);
+  inline matrix<T> &operator+=(expression<E> const &expr);
 
   template <typename E>
-  matrix<T> &operator*=(expression<E> const &expr);
+  inline matrix<T> &operator*=(expression<E> const &expr);
 
   template <typename E>
-  matrix<T> &operator-=(expression<E> const &expr);
+  inline matrix<T> &operator-=(expression<E> const &expr);
 
   template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
-  matrix<T> &operator+=(Scalar const &expr);
+  inline matrix<T> &operator+=(Scalar const &expr);
 
   template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
-  matrix<T> &operator-=(Scalar const &expr);
+  inline matrix<T> &operator-=(Scalar const &expr);
 
   template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
-  matrix<T> &operator*=(Scalar const &expr);
+  inline matrix<T> &operator*=(Scalar const &expr);
 };
 } // namespace fastmatrix
 
@@ -215,24 +215,24 @@ public:
   using EvalReturnType = std::common_type_t<eval_return_type_t<E1>, eval_return_type_t<E2>>;
   using ElementType = std::common_type_t<element_type_t<E1>, element_type_t<E2>>;
 
-  cwise_matrix_binary_operation(expression<E1> const &expr1, expression<E2> const &expr2)
+  inline cwise_matrix_binary_operation(expression<E1> const &expr1, expression<E2> const &expr2)
       : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()) {}
 
-  ElementType operator()(std::size_t i, std::size_t j) const {
+  inline ElementType operator()(std::size_t i, std::size_t j) const {
     return Op::apply(expr1, expr2, i, j);
   }
 
-  const EvalReturnType eval() const {
+  inline const EvalReturnType eval() const {
     EvalReturnType temp(num_rows(), num_cols());
     temp.assign((*this));
     return temp;
   }
 
-  std::size_t num_rows() const {
+  inline std::size_t num_rows() const {
     return expr1.num_rows();
   }
 
-  std::size_t num_cols() const {
+  inline std::size_t num_cols() const {
     return expr1.num_cols();
   }
 };
@@ -255,7 +255,7 @@ private:
   EvalReturnType temp;
 
 public:
-  matrix_product(expression<E1> const &expr1, expression<E2> const &expr2)
+  inline matrix_product(expression<E1> const &expr1, expression<E2> const &expr2)
       : expr1(expr1.get_const_derived()), expr2(expr2.get_const_derived()),
         temp(expr1.num_rows(), expr2.num_cols()) {
     for (std::size_t i = 0; i < num_rows(); ++i) {
@@ -269,26 +269,26 @@ public:
     }
   }
 
-  ElementType operator()(std::size_t i, std::size_t j) const {
+  inline ElementType operator()(std::size_t i, std::size_t j) const {
     return temp(i, j);
   }
 
-  EvalReturnType const &eval() const {
+  inline EvalReturnType const &eval() const {
     return temp;
   }
 
-  std::size_t num_rows() const {
+  inline std::size_t num_rows() const {
     return expr1.num_rows();
   }
 
-  std::size_t num_cols() const {
+  inline std::size_t num_cols() const {
     return expr2.num_cols();
   }
 };
 
 template <typename E1, typename E2>
 struct cwise_matrix_add {
-  static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
+  inline static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
     return expr1.get_const_derived()(i, j) + expr2.get_const_derived()(i, j);
   }
@@ -296,7 +296,7 @@ struct cwise_matrix_add {
 
 template <typename E1, typename E2>
 struct cwise_matrix_multiply {
-  static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
+  inline static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
     return expr1.get_const_derived()(i, j) * expr2.get_const_derived()(i, j);
   }
@@ -304,50 +304,50 @@ struct cwise_matrix_multiply {
 
 template <typename E1, typename E2>
 struct cwise_matrix_subtract {
-  static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
+  inline static typename std::common_type_t<element_type_t<E1>, element_type_t<E2>>
   apply(expression<E1> const &expr1, expression<E2> const &expr2, std::size_t i, std::size_t j) {
     return expr1.get_const_derived()(i, j) - expr2.get_const_derived()(i, j);
   }
 };
 
 template <typename E1, typename E2>
-auto operator+(expression<E1> const &expr1, expression<E2> const &expr2) {
+inline auto operator+(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_rows() == expr2.num_rows());
   assert(expr1.num_cols() == expr2.num_cols());
   return make_cwise_matrix_binary_operation<cwise_matrix_add>(expr1, expr2);
 }
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
-auto operator+(expression<E> const &expr, T const &scalar) {
+inline auto operator+(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_add>(expr, scalar_expression(scalar));
 }
 
 template <typename E1, typename E2>
-auto operator*(expression<E1> const &expr1, expression<E2> const &expr2) {
+inline auto operator*(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_cols() == expr2.num_rows());
   return matrix_product(expr1, expr2);
 }
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
-auto operator*(expression<E> const &expr, T const &scalar) {
+inline auto operator*(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_multiply>(expr, scalar_expression(scalar));
 }
 
 template <typename E1, typename E2>
-auto operator-(expression<E1> const &expr1, expression<E2> const &expr2) {
+inline auto operator-(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_rows() == expr2.num_rows());
   assert(expr1.num_cols() == expr2.num_cols());
   return make_cwise_matrix_binary_operation<cwise_matrix_subtract>(expr1, expr2);
 }
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
-auto operator-(expression<E> const &expr, T const &scalar) {
+inline auto operator-(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_subtract>(expr, scalar_expression(scalar));
 }
 
 template <typename T>
 template <typename E>
-matrix<T> &matrix<T>::operator+=(expression<E> const &expr) {
+inline matrix<T> &matrix<T>::operator+=(expression<E> const &expr) {
   assert(n_rows == expr.num_rows());
   assert(n_cols == expr.num_cols());
   assign(make_cwise_matrix_binary_operation<cwise_matrix_add>(*this, expr));
@@ -356,14 +356,14 @@ matrix<T> &matrix<T>::operator+=(expression<E> const &expr) {
 
 template <typename T>
 template <typename Scalar, typename>
-matrix<T> &matrix<T>::operator+=(Scalar const &scalar) {
+inline matrix<T> &matrix<T>::operator+=(Scalar const &scalar) {
   assign(make_cwise_matrix_binary_operation<cwise_matrix_add>(*this, scalar_expression(scalar)));
   return *this;
 }
 
 template <typename T>
 template <typename E>
-matrix<T> &matrix<T>::operator*=(expression<E> const &expr) {
+inline matrix<T> &matrix<T>::operator*=(expression<E> const &expr) {
   assert(n_rows == expr.num_cols());
   assign(matrix_product(*this, expr));
   return *this;
@@ -371,7 +371,7 @@ matrix<T> &matrix<T>::operator*=(expression<E> const &expr) {
 
 template <typename T>
 template <typename Scalar, typename>
-matrix<T> &matrix<T>::operator*=(Scalar const &scalar) {
+inline matrix<T> &matrix<T>::operator*=(Scalar const &scalar) {
   assign(
       make_cwise_matrix_binary_operation<cwise_matrix_multiply>(*this, scalar_expression(scalar)));
   return *this;
@@ -379,7 +379,7 @@ matrix<T> &matrix<T>::operator*=(Scalar const &scalar) {
 
 template <typename T>
 template <typename E>
-matrix<T> &matrix<T>::operator-=(expression<E> const &expr) {
+inline matrix<T> &matrix<T>::operator-=(expression<E> const &expr) {
   assert(n_rows == expr.num_rows());
   assert(n_cols == expr.num_cols());
   assign(make_cwise_matrix_binary_operation<cwise_matrix_subtract>(*this, expr));
@@ -388,7 +388,7 @@ matrix<T> &matrix<T>::operator-=(expression<E> const &expr) {
 
 template <typename T>
 template <typename Scalar, typename>
-matrix<T> &matrix<T>::operator-=(Scalar const &scalar) {
+inline matrix<T> &matrix<T>::operator-=(Scalar const &scalar) {
   assign(
       make_cwise_matrix_binary_operation<cwise_matrix_subtract>(*this, scalar_expression(scalar)));
   return *this;
