@@ -133,11 +133,15 @@ void test_scalar_add() {
   auto v_result = make_vector<int>(row, col, result_filler);
 
   auto m = make_matrix<int>(row, col, filler);
+
   auto m_result = make_matrix<int>(row, col, empty_filler);
-
   m_result = m + scalar;
-
   assert_equals(v_result, m_result);
+
+  m_result = make_matrix<int>(row, col, empty_filler);
+  m_result = scalar + m;
+  assert_equals(v_result, m_result);
+
   std::cout << "Successfully executed test_scalar_add\n";
 }
 
@@ -153,11 +157,15 @@ void test_scalar_multiply() {
   auto v_result = make_vector<int>(row, col, result_filler);
 
   auto m = make_matrix<int>(row, col, filler);
+
   auto m_result = make_matrix<int>(row, col, empty_filler);
-
   m_result = m * scalar;
-
   assert_equals(v_result, m_result);
+
+  m_result = make_matrix<int>(row, col, empty_filler);
+  m_result = scalar * m;
+  assert_equals(v_result, m_result);
+
   std::cout << "Successfully executed test_scalar_multiply\n";
 }
 
@@ -173,11 +181,15 @@ void test_scalar_subtract() {
   auto v_result = make_vector<int>(row, col, result_filler);
 
   auto m = make_matrix<int>(row, col, filler);
+
   auto m_result = make_matrix<int>(row, col, empty_filler);
-
   m_result = m - scalar;
-
   assert_equals(v_result, m_result);
+
+  m_result = make_matrix<int>(row, col, empty_filler);
+  m_result = scalar - m;
+  assert_equals(v_result, m_result);
+
   std::cout << "Successfully executed test_scalar_subtract\n";
 }
 

@@ -325,6 +325,11 @@ inline auto operator+(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_add>(expr, scalar_expression(scalar));
 }
 
+template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+inline auto operator+(T const &scalar, expression<E> const &expr) {
+  return make_cwise_matrix_binary_operation<cwise_matrix_add>(expr, scalar_expression(scalar));
+}
+
 template <typename E1, typename E2>
 inline auto operator*(expression<E1> const &expr1, expression<E2> const &expr2) {
   assert(expr1.num_cols() == expr2.num_rows());
@@ -333,6 +338,11 @@ inline auto operator*(expression<E1> const &expr1, expression<E2> const &expr2) 
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
 inline auto operator*(expression<E> const &expr, T const &scalar) {
+  return make_cwise_matrix_binary_operation<cwise_matrix_multiply>(expr, scalar_expression(scalar));
+}
+
+template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+inline auto operator*(T const &scalar, expression<E> const &expr) {
   return make_cwise_matrix_binary_operation<cwise_matrix_multiply>(expr, scalar_expression(scalar));
 }
 
@@ -345,6 +355,11 @@ inline auto operator-(expression<E1> const &expr1, expression<E2> const &expr2) 
 
 template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
 inline auto operator-(expression<E> const &expr, T const &scalar) {
+  return make_cwise_matrix_binary_operation<cwise_matrix_subtract>(expr, scalar_expression(scalar));
+}
+
+template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+inline auto operator-(T const &scalar, expression<E> const &expr) {
   return make_cwise_matrix_binary_operation<cwise_matrix_subtract>(expr, scalar_expression(scalar));
 }
 
