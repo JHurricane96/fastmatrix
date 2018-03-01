@@ -1,3 +1,6 @@
+#ifndef FASTMATRIX_FASTMATRIX_HPP
+#define FASTMATRIX_FASTMATRIX_HPP
+
 #include <cassert>
 #include <ostream>
 #include <type_traits>
@@ -394,3 +397,5 @@ inline matrix<T> &matrix<T>::operator-=(Scalar const &scalar) {
   return *this;
 }
 } // namespace fastmatrix
+
+#endif // FASTMATRIX_FASTMATRIX_HPP
