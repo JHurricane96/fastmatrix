@@ -21,3 +21,5 @@ To run the tests and benchmarks on Linux:
 4. `make`
 
 5. `./tests` to run the tests and `./bench/bench` to run the benchmarks
+
+Run `doxygen` to generate the documentation in the `/docs` folder.
