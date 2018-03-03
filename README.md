@@ -39,6 +39,12 @@ int main () {
 	// in advance to prevent repeated calculations
 	result = a * (b + result).eval();
 
+	// Getting and setting elements is possible
+	// All indexing is 0-based
+	std::cout << result(0, 1) << '\n'; // (row, column)
+	result.set_elt(0, 1, -1.5); // (row, column, new value)
+	std::cout << result(0, 1) << '\n';
+
 	// Printing a matrix is easy
 	std::cout << result << '\n';
 	return 0;
