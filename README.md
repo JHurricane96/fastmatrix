@@ -16,11 +16,11 @@ using namespace fastmatrix;
 
 int main () {
 	// Make a 3x3 matrix filled with 0.5
-	matrix<float> a(3, 3, 0.5);
+	matrix<float> a(3, 3, 0.5); // (row, col, value)
 	matrix<float> b(3, 3, 0.4);
 
 	// Make an empty 3x3 matrix
-	matrix<float> result(3, 3);
+	matrix<float> result(3, 3); // (row, col)
 
 	// Basic arithmetic can be done easily
 	result = a + b;
