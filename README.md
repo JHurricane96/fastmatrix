@@ -2,6 +2,8 @@
 
 A linear algebra library in C++ to do fast math.
 
+Uses [expression templates](https://en.wikipedia.org/wiki/Expression_templates) to build expression trees at compile time. Most expressions are lazily evaluated.
+
 ## Usage
 
 fastmatrix is header-only, simply add the location of fastmatrix.hpp to your include path while compiling.
