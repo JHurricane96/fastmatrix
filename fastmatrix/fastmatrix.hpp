@@ -443,7 +443,8 @@ public:
    *
    * \return     This matrix
    */
-  template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
+  template <typename Scalar,
+            typename = std::enable_if_t<!std::is_base_of<expression<Scalar>, Scalar>::value>>
   inline matrix<T> &operator+=(Scalar const &expr);
 
   /**
@@ -455,7 +456,8 @@ public:
    *
    * \return     This matrix
    */
-  template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
+  template <typename Scalar,
+            typename = std::enable_if_t<!std::is_base_of<expression<Scalar>, Scalar>::value>>
   inline matrix<T> &operator-=(Scalar const &expr);
 
   /**
@@ -467,7 +469,8 @@ public:
    *
    * \return     This matrix
    */
-  template <typename Scalar, typename = std::enable_if_t<std::is_arithmetic<Scalar>::value>>
+  template <typename Scalar,
+            typename = std::enable_if_t<!std::is_base_of<expression<Scalar>, Scalar>::value>>
   inline matrix<T> &operator*=(Scalar const &expr);
 };
 } // namespace fastmatrix
@@ -810,12 +813,14 @@ inline auto operator+(expression<E1> const &expr1, expression<E2> const &expr2) 
   return make_cwise_matrix_binary_operation<cwise_matrix_add>(expr1, expr2);
 }
 
-template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename E, typename T,
+          typename = std::enable_if_t<!std::is_base_of<expression<T>, T>::value>>
 inline auto operator+(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_add>(expr, scalar_expression(scalar));
 }
 
-template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename E, typename T,
+          typename = std::enable_if_t<!std::is_base_of<expression<T>, T>::value>>
 inline auto operator+(T const &scalar, expression<E> const &expr) {
   return expr + scalar;
 }
@@ -826,12 +831,14 @@ inline auto operator*(expression<E1> const &expr1, expression<E2> const &expr2) 
   return matrix_product(expr1, expr2);
 }
 
-template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename E, typename T,
+          typename = std::enable_if_t<!std::is_base_of<expression<T>, T>::value>>
 inline auto operator*(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_multiply>(expr, scalar_expression(scalar));
 }
 
-template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename E, typename T,
+          typename = std::enable_if_t<!std::is_base_of<expression<T>, T>::value>>
 inline auto operator*(T const &scalar, expression<E> const &expr) {
   return expr + scalar;
 }
@@ -843,12 +850,14 @@ inline auto operator-(expression<E1> const &expr1, expression<E2> const &expr2) 
   return make_cwise_matrix_binary_operation<cwise_matrix_subtract>(expr1, expr2);
 }
 
-template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename E, typename T,
+          typename = std::enable_if_t<!std::is_base_of<expression<T>, T>::value>>
 inline auto operator-(expression<E> const &expr, T const &scalar) {
   return make_cwise_matrix_binary_operation<cwise_matrix_subtract>(expr, scalar_expression(scalar));
 }
 
-template <typename E, typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
+template <typename E, typename T,
+          typename = std::enable_if_t<!std::is_base_of<expression<T>, T>::value>>
 inline auto operator-(T const &scalar, expression<E> const &expr) {
   return expr + scalar;
 }

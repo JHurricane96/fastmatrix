@@ -1,7 +1,9 @@
 #include "fastmatrix/fastmatrix.hpp"
+#include <complex>
 #include <iostream>
 
 using namespace std;
+using namespace std::complex_literals;
 
 template <typename T, typename F>
 matrix<T> make_matrix(size_t num_rows, size_t num_cols, F const &filler) {
@@ -216,6 +218,29 @@ void test_variety() {
   std::cout << "Successfully executed test_variety\n";
 }
 
+void test_complex() {
+  size_t row = 5, col = 3;
+
+  auto filler = [](size_t i, size_t j) { return complex(i, j); };
+  auto a_filler = [](size_t i, size_t j) { return complex(i, j); };
+
+  complex<int> scalar_1 = 5. + 6i;
+  complex<int> scalar_2 = 10. + 20i;
+  auto x = make_matrix<complex<int>>(row, col, filler);
+  auto b = make_matrix<complex<int>>(row, col, filler);
+  auto a = make_matrix<complex<int>>(row, row, a_filler);
+
+  vector<vector<complex<int>>> result = {{-10. - 50i, -6. - 44i, -2. - 38i},
+                                         {-14. - 44i, -10. - 43i, -6. - 42i},
+                                         {-18. - 38i, -14. - 42i, -10. - 46i},
+                                         {-22. - 32i, -18. - 41i, -14. - 50i},
+                                         {-26. - 26i, -22. - 40i, -18. - 54i}};
+
+  x = x + b * scalar_1 - scalar_2 - a * x;
+  assert_equals(result, x);
+  std::cout << "Successfully executed test_complex\n";
+}
+
 int main() {
   std::cout << "Running tests...\n";
   test_matrix_add();
@@ -225,6 +250,7 @@ int main() {
   test_scalar_multiply();
   test_scalar_subtract();
   test_variety();
+  test_complex();
   std::cout << "All tests successful!\n";
   return 0;
 }
