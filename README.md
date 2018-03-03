@@ -55,9 +55,9 @@ To run the tests and benchmarks on Linux:
 
 2. `mkdir build && cd build`
 
-3. `cmake ..` (Add -DBUILD_TESTS=OFF to not build tests, -DBUILD_BENCHMARKS=OFF to not build benchmarks)
+3. `cmake ..` (Add `-DBUILD_TESTS=OFF` to not build tests, `-DBUILD_BENCHMARKS=OFF` to not build benchmarks). You can set the compiler to use by setting the `CXX` environment variable before running cmake.
 
-4. `make`
+4. `cmake --build .`
 
 5. `./tests` to run the tests and `./bench/bench` to run the benchmarks
 
