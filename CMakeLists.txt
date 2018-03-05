@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10.1)
 project(fastmatrix)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -14,6 +12,7 @@ set(FASTMATRIX_PATH .)
 
 if(BUILD_TESTS)
   add_executable(tests tests.cpp)
+  target_compile_options(tests PRIVATE $<$<CONFIG:DEBUG>:-g> $<$<NOT:$<CONFIG:DEBUG>>:-Og>)
 endif()
 
 if(BUILD_BENCHMARKS)
