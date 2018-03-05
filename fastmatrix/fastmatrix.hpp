@@ -839,7 +839,7 @@ inline auto operator*(expression<E> const &expr, T const &scalar) {
 
 template <typename E, typename T, typename = enable_if_not_expression<T>>
 inline auto operator*(T const &scalar, expression<E> const &expr) {
-  return expr + scalar;
+  return expr * scalar;
 }
 
 template <typename E1, typename E2>
@@ -856,7 +856,7 @@ inline auto operator-(expression<E> const &expr, T const &scalar) {
 
 template <typename E, typename T, typename = enable_if_not_expression<T>>
 inline auto operator-(T const &scalar, expression<E> const &expr) {
-  return expr + scalar;
+  return expr - scalar;
 }
 
 template <typename T>
