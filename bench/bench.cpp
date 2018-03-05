@@ -53,6 +53,6 @@ int main() {
   print_results("(5*a)+b", timer.value(), (double(row * col * REPEAT * 2) / timer.value()));
 
   BENCH(timer, TRIES, REPEAT, result = result + b * 5 - 10 - a * result;);
-  print_results("(5*a)+b", timer.value(), (double(row * col * (col + 4) * REPEAT) / timer.value()));
+  print_results("result + b*5 - 10 - a*result", timer.value(), (double(row * col * (col + 4) * REPEAT) / timer.value()));
   return 0;
 }
