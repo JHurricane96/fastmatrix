@@ -8,6 +8,10 @@ Uses [expression templates](https://en.wikipedia.org/wiki/Expression_templates) 
 
 fastmatrix is header-only, simply add the location of fastmatrix.hpp to your include path while compiling.
 
+For optimal speed, compile with the highest level of optimizations (`-O3` on gcc/clang) and with assertions disabled (`-DNDEBUG` on gcc/clang)
+
+Example code:
+
 ```cpp
 #include "fastmatrix/fastmatrix.hpp"
 #include <iostream>
