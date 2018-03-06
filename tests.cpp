@@ -47,6 +47,37 @@ void assert_equals(vector<vector<T>> const &v, matrix<T> const &m) {
   }
 }
 
+void test_basic_matrix_methods() {
+  const float init_fill_value = 5.1;
+  const size_t rows = 3, cols = 4;
+
+  matrix<float> m(rows, cols, init_fill_value);
+
+  assert(m.num_rows() == rows);
+  assert(m.num_cols() == cols);
+  for (size_t i = 0; i < rows; ++i) {
+    for (size_t j = 0; j < cols; ++j) {
+      assert(m(i, j) == init_fill_value);
+    }
+  }
+
+  size_t set_i = 1, set_j = 2;
+  const float new_value = -5.3;
+  m.set_elt(set_i, set_j, new_value);
+
+  for (size_t i = 0; i < rows; ++i) {
+    for (size_t j = 0; j < cols; ++j) {
+      if (i == set_i && j == set_j) {
+        assert(m(i, j) == new_value);
+      } else {
+        assert(m(i, j) == init_fill_value);
+      }
+    }
+  }
+
+  std::cout << "Successfully executed test_basic_matrix_methods\n";
+}
+
 void test_matrix_add() {
   size_t row = 1000, col = 3000;
 
@@ -243,6 +274,7 @@ void test_complex() {
 
 int main() {
   std::cout << "Running tests...\n";
+  test_basic_matrix_methods();
   test_matrix_add();
   test_matrix_multiply();
   test_matrix_subtract();
