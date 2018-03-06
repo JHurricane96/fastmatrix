@@ -707,7 +707,7 @@ public:
    * Since the matrix product expression is eagerly evaluated as soon as it is constructed, this
    * method simply returns a const reference to the temporary in which the result has been stored
    *
-   * \return     { description_of_the_return_value }
+   * \return     Reference to the product
    */
   inline EvalReturnType const &eval() const {
     return temp;
