@@ -249,7 +249,7 @@ void test_variety() {
   std::cout << "Successfully executed test_variety\n";
 }
 
-void test_complex() {
+void test_complex_and_eval() {
   size_t row = 5, col = 3;
 
   auto filler = [](size_t i, size_t j) { return complex(i, j); };
@@ -269,7 +269,11 @@ void test_complex() {
 
   x = x + b * scalar_1 - scalar_2 - a * x;
   assert_equals(result, x);
-  std::cout << "Successfully executed test_complex\n";
+
+  x = make_matrix<complex<int>>(row, col, filler);
+  x = (x + (b * scalar_1).eval()).eval() - scalar_2 - a * x;
+  assert_equals(result, x);
+  std::cout << "Successfully executed test_complex_and_eval\n";
 }
 
 int main() {
@@ -282,7 +286,7 @@ int main() {
   test_scalar_multiply();
   test_scalar_subtract();
   test_variety();
-  test_complex();
+  test_complex_and_eval();
   std::cout << "All tests successful!\n";
   return 0;
 }
