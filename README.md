@@ -95,7 +95,7 @@ To run the tests and benchmarks on Linux:
 
 (Dependencies: CMake >= 3.10.1, g++ >= 7/clang++ >= 5)
 
-1. Clone this repo
+1. Clone [this repo](https://github.com/JHurricane96/fastmatrix)
 
 2. `mkdir build && cd build`
 
