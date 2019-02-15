@@ -55,6 +55,40 @@ int main () {
 }
 ```
 
+## Benchmarks
+
+I ran some benchmarks on my PC, evaluating the performance of expressions in eager and lazy mode.
+
+**Eager mode** is equivalent to a naive implementation of arithmetic expressions, creating a temporary variable after each operation. This behaviour was simulated by calling `.eval()` after every operation.
+
+**Lazy mode** constructs an expression at compile time using expression templates and only evaluates the expression when assigned to a matrix or `.eval()` is called explicitly.
+
+### Config:
+
+**CPU**: 4th Generation Intel(R) Core(TM) i7-4500U processor (4M Cache, up to 3.0 GHz)  
+**Compiler**: (Arch Linux) g++ (GCC) 8.2.1 20181127
+
+### Results:
+
+- Capital letters represent matrices, Greek alphabets represent scalars.
+- Each matrix is of size 10,000 &times; 1,000 and is filled with random floats.
+- The metrics were obtained by running 10 trials.
+- Each trial consisted of computing an expression 100 times.
+
+#### X = A + B + C + D
+
+&nbsp; | Lazy         | Eager
+-------|--------------|-----
+Time   | 1.66 ± 0.06s | 6.28 ± 0.20s
+GFLOPS | 0.45         | 1.69
+
+#### X = &alpha;A + &beta;B
+
+&nbsp; | Lazy         | Eager
+-------|--------------|------
+Time   | 0.88 ± 0.01s | 5.68 ± 0.04s
+GFLOPS | 3.16         | 0.49
+
 ## Development
 
 To run the tests and benchmarks on Linux:
