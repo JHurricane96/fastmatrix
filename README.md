@@ -1,4 +1,4 @@
-# fastmatrix
+# [fastmatrix](https://github.com/JHurricane96/fastmatrix)
 
 A linear algebra library in C++ to do fast math.
 
