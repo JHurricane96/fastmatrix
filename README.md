@@ -77,14 +77,14 @@ I ran some benchmarks on my PC, evaluating the performance of expressions in eag
 
 #### X = A + B + C + D
 
-&nbsp; | Lazy         | Eager
+&nbsp; | Lazy         | Eager (baseline)
 -------|--------------|-----
 Time   | 1.66 ± 0.06s | 6.28 ± 0.20s
-GFLOPS | 0.45         | 1.69
+GFLOPS | 1.69         | 0.45
 
 #### X = &alpha;A + &beta;B
 
-&nbsp; | Lazy         | Eager
+&nbsp; | Lazy         | Eager (baseline)
 -------|--------------|------
 Time   | 0.88 ± 0.01s | 5.68 ± 0.04s
 GFLOPS | 3.16         | 0.49
