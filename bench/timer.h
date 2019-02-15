@@ -71,6 +71,7 @@ public:
     m_bests.fill(1e9);
     m_worsts.fill(0);
     m_totals.fill(0);
+    m_squared_totals.fill(0);
   }
   inline void start()
   {
@@ -87,6 +88,8 @@ public:
     m_worsts[1] = std::max(m_worsts[1],m_times[1]);
     m_totals[0] += m_times[0];
     m_totals[1] += m_times[1];
+    m_squared_totals[0] += m_times[0] * m_times[0];
+    m_squared_totals[1] += m_times[1] * m_times[1];
   }
 
   /** Return the elapsed time in seconds between the last start/stop pair
@@ -115,6 +118,13 @@ public:
   inline double total(int TIMER = CPU_TIMER) const
   {
     return m_totals[TIMER];
+  }
+
+  /** Return the total of squares of elapsed time in seconds.
+    */
+  inline double squared_total(int TIMER = CPU_TIMER) const
+  {
+    return m_squared_totals[TIMER];
   }
 
   inline double getCpuTime() const
@@ -156,6 +166,7 @@ protected:
   std::array<double, 2> m_bests;
   std::array<double, 2> m_worsts;
   std::array<double, 2> m_totals;
+  std::array<double, 2> m_squared_totals;
 };
 
 #define BENCH(TIMER,TRIES,REP,CODE) { \
